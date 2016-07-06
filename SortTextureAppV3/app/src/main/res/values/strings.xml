@@ -13,6 +13,6 @@
 
     <string name="title_activity_list_arrange">Gallery Activity</string>
 
-    <string name="button4Text">Add Word</string>
-    <string name="button5Text">View Poem</string>
+    <string name="button4Text">Add Image</string>
+    <string name="button5Text">Submit Order</string>
 </resources>

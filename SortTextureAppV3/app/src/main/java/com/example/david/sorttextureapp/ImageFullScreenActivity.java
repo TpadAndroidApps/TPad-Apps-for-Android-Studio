@@ -1,6 +1,5 @@
 package com.example.david.sorttextureapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,15 +11,16 @@ import android.content.pm.ActivityInfo;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+
 public class ImageFullScreenActivity extends AppCompatActivity {
     private static final int INITIAL_HIDE_DELAY = 2000;
     private View mDecorView;
 
     private static ImageView imgView;
-    private static Button nextBtn;
-    private static Button prevBtn;
-    private int current_image_index = 0;
     int[] textureImages = {R.drawable.image1,R.drawable.image2,R.drawable.image3,R.drawable.image4,R.drawable.image5,R.drawable.image6,R.drawable.image7,R.drawable.image8,R.drawable.image9,R.drawable.image10};
+    int[] receivedOrder = new int[10];
+    int receiveCurrentImage = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +64,22 @@ public class ImageFullScreenActivity extends AppCompatActivity {
             }
         });
 
+        // data passed from ListArrangeActivity
+        receiveCurrentImage = getIntent().getIntExtra("currentImage",0);
+        System.out.println("current "+receiveCurrentImage);
+        ArrayList<String> data = getIntent().getStringArrayListExtra("passToFullActivity");
+
+
+        for (int i = 0; i < data.size(); i++) {
+            try {
+                receivedOrder[i] = Integer.parseInt(data.get(i));
+                //System.out.println("order " + receivedOrder[i]);
+            } catch (NumberFormatException nfe) {};
+        }
+
+
+        imgView = (ImageView) findViewById(R.id.fullscreen_content);
+        imgView.setImageResource(textureImages[receivedOrder[receiveCurrentImage]-1]);
         showSystemUI();
         nextBtnClick();
         prevBtnClick();
@@ -113,18 +129,20 @@ public class ImageFullScreenActivity extends AppCompatActivity {
 
     public void nextBtnClick() {
         imgView = (ImageView) findViewById(R.id.fullscreen_content);
-        nextBtn = (Button) findViewById(R.id.button3);
+        Button nextBtn = (Button) findViewById(R.id.button3);
         nextBtn.setOnClickListener(
                 new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
-                        current_image_index++;
-                        if(current_image_index < textureImages.length) {
-                            imgView.setImageResource(textureImages[current_image_index]);
+                        receiveCurrentImage++;
+                        if(receiveCurrentImage < receivedOrder.length) {
+                            imgView.setImageResource(textureImages[receivedOrder[receiveCurrentImage]-1]);
+                            //System.out.println(receiveCurrentImage);
                         }
                         else {
-                            current_image_index = 0;
-                            imgView.setImageResource(textureImages[current_image_index]);
+                            receiveCurrentImage = 0;
+                            //System.out.println(receiveCurrentImage);
+                            imgView.setImageResource(textureImages[receivedOrder[receiveCurrentImage]-1]);
                         }
                     }
                 }
@@ -133,19 +151,21 @@ public class ImageFullScreenActivity extends AppCompatActivity {
 
     public void prevBtnClick() {
         imgView = (ImageView) findViewById(R.id.fullscreen_content);
-        prevBtn = (Button) findViewById(R.id.button1);
+        Button prevBtn = (Button) findViewById(R.id.button1);
         prevBtn.setOnClickListener(
                 new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
-                        current_image_index--;
-                        if (current_image_index < 0) {
-                            imgView.setImageResource(textureImages[textureImages.length-1]);
-                            current_image_index = textureImages.length-1;
+                        receiveCurrentImage--;
+                        if (receiveCurrentImage < 0) {
+                            receiveCurrentImage = receivedOrder.length-1;
+                            imgView.setImageResource(textureImages[receivedOrder[receiveCurrentImage]-1]);
+                            //System.out.println(receiveCurrentImage);
                         }
                         else {
-                            current_image_index = current_image_index % textureImages.length;
-                            imgView.setImageResource(textureImages[current_image_index]);
+                            //receiveCurrentImage = receiveCurrentImage % receivedOrder.length;
+                            imgView.setImageResource(textureImages[receivedOrder[receiveCurrentImage]-1]);
+                            //System.out.println(receiveCurrentImage);
                         }
                     }
                 }
@@ -153,7 +173,6 @@ public class ImageFullScreenActivity extends AppCompatActivity {
     }
 
     public void ShowGrid(View view) {
-        Intent intent = new Intent(this, ListArrangeActivity.class);
-        startActivity(intent);
+        super.onBackPressed();
     }
 }

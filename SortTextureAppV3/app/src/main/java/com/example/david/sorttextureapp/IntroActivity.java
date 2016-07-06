@@ -16,7 +16,7 @@ public class IntroActivity extends AppCompatActivity {
     }
 
     public void StartTask(View view) {
-        Intent intent = new Intent(this, ImageFullScreenActivity.class);
+        Intent intent = new Intent(this, ListArrangeActivity.class);
         startActivity(intent);
     }
 }
